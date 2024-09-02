@@ -9,7 +9,7 @@
 ?>
 <?php
 
-$GLOBALS['title']="Block-HMS";
+$GLOBALS['title']="Room-HMS";
 $base_url="http://localhost/hms/";
 $GLOBALS['output']='';
 $GLOBALS['isData']="";
@@ -39,25 +39,26 @@ else
             //echo '<script type="text/javascript"> alert("'.$msg.'");</script>';
             if ($msg = "true") {
 
-                $userIds = $db->getAutoId("BL");
+                $userIds = $db->getAutoId("RM");
                 $data = array(
 
-                    'blockId' => $userIds[1],
-                    'blockNo' => $_POST['blockNo'],
-                    'blockName' => $_POST['blockName'],
+                    'roomId' => $userIds[1],
+                    'roomNo' => $_POST['roomNo'],
+                    'blockId' => $_POST['blockId'],
                     'description' => $_POST['description'],
+                    'noOfSeat' => $_POST['noOfSeat'],
                     'isActive'      => 'Y'
 
                 );
-                $result = $db->insertData("blocks",$data);
+                $result = $db->insertData("rooms",$data);
                 if($result>=0) {
                     $id =intval($userIds[0])+1;
 
-                    $query="UPDATE auto_id set number=".$id." where prefix='BL';";
+                    $query="UPDATE auto_id set number=".$id." where prefix='RM';";
                     $result=$db->update($query);
-                    //var_dump($result);
+                   // var_dump($result);
                     //  $db->close();
-                    echo '<script type="text/javascript"> alert("Block Added Successfully.");</script>';
+                    echo '<script type="text/javascript"> alert("Room Added Successfully.");</script>';
                     getData();
 
                 } else {
@@ -89,18 +90,19 @@ function getData()
     if ($msg = "true") {
 
         $data = array();
-        $result = $db->getData("SELECT * FROM blocks where isActive='Y'");
+        $result = $db->getData("SELECT * FROM rooms where isActive='Y'");
         $GLOBALS['output']='';
         if(false===strpos((string)$result,"Can't"))
         {
 
             $GLOBALS['output'].='<div class="table-responsive">
-                                <table id="blockList" class="table table-striped table-bordered table-hover">
+                                <table id="roomList" class="table table-striped table-bordered table-hover">
                                     <thead>
                                         <tr>
 
+                                            <th>Room No</th>
+                                            <th>No Of Seat</th>
                                             <th>Block No</th>
-                                            <th>Block Name</th>
                                             <th>Description</th>
                                             <th>Action</th>
                                         </tr>
@@ -110,10 +112,11 @@ function getData()
                 $GLOBALS['isData']="1";
                 $GLOBALS['output'] .= "<tr>";
 
-                $GLOBALS['output'] .= "<td>" . $row['blockNo'] . "</td>";
-                $GLOBALS['output'] .= "<td>" . $row['blockName'] . "</td>";
+                $GLOBALS['output'] .= "<td>" . $row['roomNo'] . "</td>";
+                $GLOBALS['output'] .= "<td>" . $row['noOfSeat'] . "</td>";
+                $GLOBALS['output'] .= "<td>" . $row['blockId'] . "</td>";
                 $GLOBALS['output'] .= "<td>" . $row['description'] . "</td>";
-                $GLOBALS['output'] .= "<td><a title='Edit' class='btn btn-success btn-circle' href='blockaction.php?id=" . $row['blockId'] ."&wtd=edit'"."><i class='fa fa-pencil'></i></a>&nbsp&nbsp<a title='Delete' class='btn btn-danger btn-circle' href='blockaction.php?id=" . $row['blockId'] ."&wtd=delete'"."><i class='fa fa-trash-o'></i></a></td>";
+                $GLOBALS['output'] .= "<td><a title='Edit' class='btn btn-success btn-circle' href='roomaction.php?id=" . $row['roomId'] ."&wtd=edit'"."><i class='fa fa-pencil'></i></a>&nbsp&nbsp<a title='Delete' class='btn btn-danger btn-circle' href='roomaction.php?id=" . $row['roomId'] ."&wtd=delete'"."><i class='fa fa-trash-o'></i></a></td>";
                 $GLOBALS['output'] .= "</tr>";
 
             }
@@ -138,7 +141,7 @@ function getData()
 <div id="page-wrapper">
     <div class="row">
         <div class="col-lg-12">
-            <h1 class="page-header titlehms"><i class="fa fa-hand-o-right"></i>Blocks</h1>
+            <h1 class="page-header titlehms"><i class="fa fa-hand-o-right"></i>Rooms</h1>
         </div>
         <!-- /.col-lg-12 -->
     </div>
@@ -147,34 +150,44 @@ function getData()
         <div class="col-lg-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-info-circle fa-fw"></i> Hostel Block Information
+                    <i class="fa fa-info-circle fa-fw"></i> Hostel Room Information
                 </div>
                 <!-- /.panel-heading -->
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-lg-12">
-                            <form name="fees" action="block.php"  accept-charset="utf-8" method="post" enctype="multipart/form-data">
+                            <form name="fees" action="room.php"  accept-charset="utf-8" method="post" enctype="multipart/form-data">
 
 
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="col-lg-4">
                                             <div class="form-group ">
-                                                <label>Block No</label>
+                                                <label>Room No</label>
                                                 <div class="input-group">
 
                                                     <span class="input-group-addon"><i class="fa fa-sort-numeric-asc"></i> </span>
-                                                    <input type="text" placeholder="Block No" class="form-control" name="blockNo" required>
+                                                    <input type="text" placeholder="Room No" class="form-control" name="roomNo" required>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-lg-4">
                                             <div class="form-group ">
-                                                <label>Block Name</label>
+                                                <label>Number Of Seat</label>
                                                 <div class="input-group">
 
                                                     <span class="input-group-addon"><i class="fa fa-info"></i> </span>
-                                                    <input type="text" placeholder="Block Name" class="form-control" name="blockName" required>
+                                                    <input type="text" placeholder="No Of Seat" class="form-control" name="noOfSeat" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group ">
+                                                <label>Block No</label>
+                                                <div class="input-group">
+
+                                                    <span class="input-group-addon"><i class="fa fa-sort-numeric-asc"></i> </span>
+                                                    <input type="text" placeholder="Block No" class="form-control" name="blockId" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -235,7 +248,7 @@ function getData()
 
 
 
-        $('#blockList').dataTable();
+        $('#roomList').dataTable();
     });
 
 
